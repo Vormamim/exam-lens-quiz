@@ -1,6 +1,6 @@
 # Exam Lens
 
-A penalty-scored revision quiz for Year 12 Software Engineering, built as a Progressive Web App. It has 228 multiple-choice questions across the four units, each tied to one of the 40 Exam Lens revision videos.
+A penalty-scored revision quiz for Year 12 Software Engineering, built as a Progressive Web App. It has 228 multiple-choice questions across the four units, grouped into 40 topics.
 
 ## Scoring
 

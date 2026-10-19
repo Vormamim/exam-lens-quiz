@@ -1,4 +1,4 @@
-// Question bank for Exam Lens. Each RAW entry: [video, question, [correct, wrong, wrong, wrong], explanation].
+// Question bank for Exam Lens. Each RAW entry: [topic, question, [correct, wrong, wrong, wrong], explanation].
 // The first option is always the correct one; the app shuffles options on every attempt.
 const UNITS = {
   1: { name: "Secure Software Architecture", range: "1.1–1.12" },
@@ -6,7 +6,7 @@ const UNITS = {
   3: { name: "Software Automation", range: "3.1–3.8" },
   4: { name: "Software Engineering Project", range: "4.1–4.7" }
 };
-const VIDEOS = {
+const TOPICS = {
   "1.1": "Secure software and the development cycle",
   "1.2": "End users and secure design",
   "1.3": "Six security concepts: CIA and AAA",
@@ -49,7 +49,7 @@ const VIDEOS = {
   "4.7": "Testing and evaluating the solution"
 };
 
-// Each entry: [video, question, [correct, distractor, distractor, distractor], explanation]
+// Each entry: [topic, question, [correct, distractor, distractor, distractor], explanation]
 const RAW = [
 // ---------- Unit 1 ----------
 ["1.1","The syllabus names two benefits of secure software. Which pair is it?",["Data protection, and minimising cyberattacks and vulnerabilities","Faster development, and lower hosting costs","Encryption at rest, and encryption in transit","Regulatory compliance, and higher user satisfaction"],"Name both in an exam: data protection and minimising cyberattacks and vulnerabilities."],

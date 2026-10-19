@@ -14,7 +14,7 @@ const store = {
 };
 
 // ---------- state ----------
-let S = { view: "home", unit: null, videos: [], quiz: null, lastMissed: [] };
+let S = { view: "home", unit: null, topics: [], quiz: null, lastMissed: [] };
 
 function show(view) {
   S.view = view;
@@ -27,14 +27,14 @@ function saveSession() { store.set("session", S); }
 
 // ---------- home ----------
 function renderHome() {
-  $("home-lede").textContent = Q.length + " questions drawn from the 40 revision videos. Pick a unit, choose which videos to cover, and read the reasoning after every answer.";
+  $("home-lede").textContent = Q.length + " questions across the four units of Year 12 Software Engineering. Pick a unit, choose the topics to cover, and read the reasoning after every answer.";
   $("units").innerHTML = Object.entries(UNITS).map(([n, u]) => {
     const count = Q.filter((q) => q.unit === +n).length;
     const best = store.get("best:" + n);
     const bestTxt = best ? "Best: <b>" + signed(best.net) + "</b> out of " + best.max : "Not attempted yet";
     return '<button class="unit-card" type="button" data-unit="' + n + '" style="--c:var(--u' + n + ')">' +
       '<span class="num">' + n + '</span>' +
-      '<span class="meta">UNIT ' + n + ' · VIDEOS ' + u.range + ' · ' + count + ' Q</span>' +
+      '<span class="meta">UNIT ' + n + ' · TOPICS ' + u.range + ' · ' + count + ' Q</span>' +
       '<h2>' + u.name + '</h2>' +
       '<span class="best">' + bestTxt + '</span></button>';
   }).join("");
@@ -42,36 +42,36 @@ function renderHome() {
 }
 
 // ---------- setup ----------
-const videosOf = (unit) => Object.keys(VIDEOS).filter((v) => +v.split(".")[0] === unit);
+const topicsOf = (unit) => Object.keys(TOPICS).filter((v) => +v.split(".")[0] === unit);
 function openSetup(unit) {
   S.unit = unit;
-  const saved = store.get("videos:" + unit);
-  S.videos = Array.isArray(saved) && saved.length ? saved : videosOf(unit);
-  $("setup-eyebrow").textContent = "Unit " + unit + " · videos " + UNITS[unit].range;
+  const saved = store.get("topics:" + unit);
+  S.topics = Array.isArray(saved) && saved.length ? saved : topicsOf(unit);
+  $("setup-eyebrow").textContent = "Unit " + unit + " · topics " + UNITS[unit].range;
   $("setup-title").textContent = UNITS[unit].name;
-  $("vlist").innerHTML = videosOf(unit).map((v) => {
+  $("vlist").innerHTML = topicsOf(unit).map((v) => {
     const n = Q.filter((q) => q.v === v).length;
     const id = "v-" + v.replace(".", "-");
-    return '<label class="vitem" for="' + id + '"><input type="checkbox" id="' + id + '" value="' + v + '"' + (S.videos.includes(v) ? " checked" : "") + '>' +
-      '<span class="vn">' + v + '</span><span>' + VIDEOS[v] + '</span><span class="vc">' + n + ' Q</span></label>';
+    return '<label class="vitem" for="' + id + '"><input type="checkbox" id="' + id + '" value="' + v + '"' + (S.topics.includes(v) ? " checked" : "") + '>' +
+      '<span class="vn">' + v + '</span><span>' + TOPICS[v] + '</span><span class="vc">' + n + ' Q</span></label>';
   }).join("");
-  $("vlist").querySelectorAll("input").forEach((i) => i.addEventListener("change", syncVideos));
-  syncVideos();
+  $("vlist").querySelectorAll("input").forEach((i) => i.addEventListener("change", syncTopics));
+  syncTopics();
   show("setup");
 }
-function syncVideos() {
-  S.videos = [...$("vlist").querySelectorAll("input:checked")].map((i) => i.value);
-  store.set("videos:" + S.unit, S.videos);
-  const pool = Q.filter((q) => S.videos.includes(q.v)).length;
+function syncTopics() {
+  S.topics = [...$("vlist").querySelectorAll("input:checked")].map((i) => i.value);
+  store.set("topics:" + S.unit, S.topics);
+  const pool = Q.filter((q) => S.topics.includes(q.v)).length;
   $("go-all").textContent = "All " + pool + " questions";
   $("go-quick").textContent = pool >= 10 ? "Quick 10" : "Quick " + pool;
   $("go-all").disabled = $("go-quick").disabled = pool === 0;
 }
-$("sel-all").addEventListener("click", () => { $("vlist").querySelectorAll("input").forEach((i) => (i.checked = true)); syncVideos(); });
-$("sel-none").addEventListener("click", () => { $("vlist").querySelectorAll("input").forEach((i) => (i.checked = false)); syncVideos(); });
+$("sel-all").addEventListener("click", () => { $("vlist").querySelectorAll("input").forEach((i) => (i.checked = true)); syncTopics(); });
+$("sel-none").addEventListener("click", () => { $("vlist").querySelectorAll("input").forEach((i) => (i.checked = false)); syncTopics(); });
 $("setup-back").addEventListener("click", goHome);
-$("go-quick").addEventListener("click", () => startQuiz(shuffle(Q.filter((q) => S.videos.includes(q.v))).slice(0, 10).map((q) => q.id)));
-$("go-all").addEventListener("click", () => startQuiz(shuffle(Q.filter((q) => S.videos.includes(q.v))).map((q) => q.id)));
+$("go-quick").addEventListener("click", () => startQuiz(shuffle(Q.filter((q) => S.topics.includes(q.v))).slice(0, 10).map((q) => q.id)));
+$("go-all").addEventListener("click", () => startQuiz(shuffle(Q.filter((q) => S.topics.includes(q.v))).map((q) => q.id)));
 
 // ---------- quiz ----------
 // queue holds one entry per attempt; a wrong answer appends the same question again with a fresh shuffle.
@@ -111,7 +111,7 @@ function renderQuestion() {
 
   const vidx = Q.filter((x) => x.v === q.v).indexOf(q) + 1;
   $("q-id").innerHTML = esc("Q" + q.v + "-" + String(vidx).padStart(2, "0")) + (repeat ? ' · <span class="penalty">BACK AGAIN</span>' : " · 1 mark");
-  $("q-video").textContent = "Video " + q.v + " · " + VIDEOS[q.v];
+  $("q-topic").textContent = "Topic " + q.v + " · " + TOPICS[q.v];
   $("q-text").innerHTML = fmt(q.q);
   $("opts").innerHTML = order.map((oi, k) => {
     let cls = "opt";
@@ -200,7 +200,7 @@ function finish() {
     line = t.right + " right, " + t.wrong + " wrong (−" + t.wrong + "). ";
     if (unsolved) line += unsolved + " question" + (unsolved > 1 ? "s" : "") + " left unsolved, so this run doesn't count as a best score. ";
     const pct = t.net / max;
-    line += pct >= 0.85 ? "Strong. Retry the misses to make it clean." : pct >= 0.5 ? "The penalties are adding up. Rewatch the weakest videos below." : pct >= 0 ? "Barely positive. Rewatch the videos below before your next attempt." : "Below zero. Guessing costs more than it earns. Rewatch the videos below, then go again.";
+    line += pct >= 0.85 ? "Strong. Retry the misses to make it clean." : pct >= 0.5 ? "The penalties are adding up. Revise the weakest topics below." : pct >= 0 ? "Barely positive. Revise the topics below before your next attempt." : "Below zero. Guessing costs more than it earns. Revise the topics below, then go again.";
   }
   $("r-line").textContent = line;
 
@@ -210,12 +210,12 @@ function finish() {
   const vs = Object.keys(byV).sort((a, b) => (byV[a].r / byV[a].t) - (byV[b].r / byV[b].t) || minor(a) - minor(b));
   $("bars").innerHTML = vs.length ? vs.map((v) => {
     const { r, t: n } = byV[v];
-    return '<div class="bar"><span class="vn">' + v + '</span><span class="track"><span class="fill" style="display:block;width:' + (r / n * 100) + '%"></span></span><span class="n">' + r + '/' + n + '</span><span class="lbl">' + VIDEOS[v] + '</span></div>';
+    return '<div class="bar"><span class="vn">' + v + '</span><span class="track"><span class="fill" style="display:block;width:' + (r / n * 100) + '%"></span></span><span class="n">' + r + '/' + n + '</span><span class="lbl">' + TOPICS[v] + '</span></div>';
   }).join("") : '<p class="empty-note">Nothing answered yet.</p>';
 
   const missed = rows.filter((r) => r.wrongs > 0).sort((a, b) => b.wrongs - a.wrongs);
   $("missed").innerHTML = missed.length ? missed.map((r) =>
-    '<div class="miss"><span class="m-meta">Video ' + r.q.v + ' · ' + VIDEOS[r.q.v] + ' · <span class="penalty">wrong ' + r.wrongs + '× (−' + r.wrongs + ')</span>' + (r.solved ? "" : " · unsolved") + '</span>' +
+    '<div class="miss"><span class="m-meta">Topic ' + r.q.v + ' · ' + TOPICS[r.q.v] + ' · <span class="penalty">wrong ' + r.wrongs + '× (−' + r.wrongs + ')</span>' + (r.solved ? "" : " · unsolved") + '</span>' +
     '<span class="m-q">' + fmt(r.q.q) + '</span>' +
     '<span class="m-a">✓ ' + fmt(r.q.o[0]) + '</span>' +
     '<span class="m-y">First answer: ' + fmt(r.firstPick) + '</span></div>'

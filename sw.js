@@ -1,5 +1,5 @@
 // Exam Lens service worker. Bump VERSION whenever any app file changes so clients pick up the update.
-const VERSION = "exam-lens-v1";
+const VERSION = "exam-lens-v2";
 const SHELL = [
   "./",
   "index.html",
