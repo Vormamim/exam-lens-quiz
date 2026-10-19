@@ -1,0 +1,9 @@
+# Teacher notes stay local
+*.md
+!README.md
+
+# OS / editor clutter
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/

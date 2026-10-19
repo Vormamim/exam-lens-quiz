@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exam Lens</title>
+<meta name="description" content="Penalty-scored revision quiz for Year 12 Software Engineering, built from the 40 Exam Lens videos.">
+<meta name="theme-color" content="#F3F5F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D131B" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Exam Lens">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <!-- HOME -->
+  <section id="home" style="display:grid;gap:28px">
+    <header class="masthead">
+      <div class="eyebrow">Software Engineering · Year 12 revision</div>
+      <h1>Exam Lens <span>quiz</span></h1>
+      <p id="home-lede">Questions drawn from the 40 revision videos.</p>
+    </header>
+    <p class="rules">Right answer <b>+1</b>. Wrong answer <b>−1</b>, and the question goes back in the queue until you get it right. Your score can go below zero.</p>
+    <div class="units" id="units"></div>
+    <div class="howto">
+      <span>Answer with <kbd>A</kbd>–<kbd>D</kbd> or <kbd>1</kbd>–<kbd>4</kbd></span>
+      <span><kbd>Enter</kbd> goes to the next question</span>
+      <span>Answer order is shuffled every attempt</span>
+      <span id="offline-note"></span>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section id="setup" hidden style="display:grid;gap:24px">
+    <button class="back" id="setup-back" type="button">← All units</button>
+    <div class="setup-head">
+      <div class="eyebrow" id="setup-eyebrow"></div>
+      <h1 id="setup-title"></h1>
+    </div>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <h2>Videos to include</h2>
+        <div class="row" style="gap:16px">
+          <button class="linkish" type="button" id="sel-all">Select all</button>
+          <button class="linkish" type="button" id="sel-none">Clear</button>
+        </div>
+      </div>
+      <div class="vlist" id="vlist"></div>
+    </div>
+    <p class="rules">Wrong answers cost <b>−1</b> and the question comes back. A Quick 10 can take a lot more than 10 answers.</p>
+    <div class="row">
+      <button class="btn" type="button" id="go-quick">Quick 10</button>
+      <button class="btn ghost" type="button" id="go-all">All questions</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" hidden style="display:grid;gap:20px">
+    <div class="qbar">
+      <div class="qbar-top">
+        <div class="eyebrow" id="q-unit"></div>
+        <div class="row" style="gap:12px">
+          <span class="tally" id="q-tally"></span>
+          <span class="net" id="q-net" aria-live="polite"></span>
+        </div>
+      </div>
+      <div class="segs" id="segs"></div>
+    </div>
+    <article class="sheet" id="sheet">
+      <div class="sheet-meta"><span class="id" id="q-id"></span><span id="q-video"></span></div>
+      <div class="sheet-body">
+        <h2 class="qtext" id="q-text"></h2>
+        <div class="opts" id="opts"></div>
+        <div class="feedback" id="feedback" hidden>
+          <div class="verdict" id="verdict"></div>
+          <p id="explain"></p>
+        </div>
+      </div>
+    </article>
+    <div class="qnav">
+      <button class="back" type="button" id="quit">← Stop and see results</button>
+      <button class="btn" type="button" id="next" disabled>Next question</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" hidden style="display:grid;gap:24px">
+    <button class="back" id="res-back" type="button">← All units</button>
+    <div class="score">
+      <div class="eyebrow" id="r-unit"></div>
+      <div class="big" id="r-score"></div>
+      <p id="r-line"></p>
+    </div>
+    <div class="row">
+      <button class="btn" type="button" id="retry-missed">Retry missed questions</button>
+      <button class="btn ghost" type="button" id="again">New attempt, same videos</button>
+    </div>
+    <div class="panel">
+      <h2>First-try accuracy by video</h2>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="panel">
+      <h2>Questions you got wrong</h2>
+      <div class="missed" id="missed"></div>
+    </div>
+  </section>
+</main>
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
